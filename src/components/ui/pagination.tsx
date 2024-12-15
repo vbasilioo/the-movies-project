@@ -35,14 +35,15 @@ export function Pagination({ totalCount, perPage }: PaginationProps) {
 
     const buttons = [];
     for (let i = start; i <= end; i++) {
+      const isCurrentPage = i === page;
       buttons.push(
         <Button
           key={i}
-          variant={i === page ? 'default' : 'outline'}
-          className="h-8 w-8 p-0 font-bold border-primary"
+          variant={isCurrentPage ? 'default' : 'outline'}
+          className={`h-8 w-8 p-0 font-bold border ${isCurrentPage ? 'text-white' : 'text-primary'} ${isCurrentPage ? 'border-primary' : 'border-gray-200'} dark:${isCurrentPage ? 'border-primary' : 'border-primary'}`}
           onClick={() => setPage(i)}
         >
-          {i}
+          <span>{i}</span>
         </Button>,
       );
     }
@@ -50,6 +51,7 @@ export function Pagination({ totalCount, perPage }: PaginationProps) {
     if (start > 1) {
       buttons.unshift(<span key="start-dots">...</span>);
     }
+
     if (end < pages) {
       buttons.push(<span key="end-dots">...</span>);
     }

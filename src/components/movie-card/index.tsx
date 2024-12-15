@@ -1,9 +1,9 @@
+import React, { useState } from 'react';
 import Image from 'next/image';
 import { Card, CardContent } from '../ui/card';
 import { Badge } from '../ui/badge';
 import { Star } from 'lucide-react';
 import { Label } from '../ui/label';
-import { useState } from 'react';
 import { Lens } from '../ui/lens';
 
 interface MovieCardProps {
@@ -24,7 +24,11 @@ export function MovieCard({
   const [hovering, setHovering] = useState(false);
 
   return (
-    <Card className="bg-gray-50 dark:bg-transparent dark:border-primary">
+    <Card
+      className={`bg-gray-50 dark:bg-transparent dark:border-primary 
+        ${hovering ? 'shadow-xl border-4 border-primary' : 'border border-transparent'} 
+        transition-all duration-100`}
+    >
       <CardContent className="p-4 space-y-4">
         <Lens hovering={hovering} setHovering={setHovering}>
           <Image
@@ -32,7 +36,9 @@ export function MovieCard({
             alt={'Movie banner'}
             width={300}
             height={700}
-            className="h-96 w-full object-cover rounded-2xl"
+            className="h-96 w-full object-cover rounded-2xl transition-all duration-300 transform hover:scale-105"
+            onMouseEnter={() => setHovering(true)}
+            onMouseLeave={() => setHovering(false)}
           />
         </Lens>
 

@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import React from 'react';
 import Logo from '../logo';
 import { Separator } from '../ui/separator';
 import facebookLogo from '../../../public/images/facebook-logo.svg';

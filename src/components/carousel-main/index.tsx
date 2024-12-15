@@ -1,5 +1,7 @@
 'use client';
 
+import React from 'react';
+
 import Image from 'next/image';
 import { Star } from 'lucide-react';
 
@@ -27,6 +29,8 @@ export function CarouselMain() {
 
   const { data: movies, isLoading } = useGetMovies({ page, per_page });
 
+  const moviesData = movies?.data ?? [];
+
   return (
     <Carousel
       plugins={[
@@ -43,13 +47,13 @@ export function CarouselMain() {
               <Loading />
             </div>
           </CarouselItem>
-        ) : movies && movies.data.length > 0 ? (
-          movies.data.map((movie: IMovie, index: number) => (
+        ) : moviesData.length > 0 ? (
+          moviesData.map((movie: IMovie, index: number) => (
             <CarouselItem key={index}>
               <div className="relative w-screen h-[700px] before:bg-black/30 before:content-center before:size-full before:absolute">
                 <Image
                   src={movie.image_url}
-                  alt={'Movie banner'}
+                  alt="Movie banner"
                   width={1000}
                   height={700}
                   className="size-full object-cover"
@@ -67,9 +71,7 @@ export function CarouselMain() {
                   <div className="flex flex-col md:flex-row md:items-center gap-4 max-w-[75vw] dark:text-white">
                     <Badge className="px-4 py-2 w-fit">
                       <Star className="size-4 mr-1 fill-accent dark:text-white dark:fill-white" />
-                      <span className="dark: text-white">
-                        {movie.rating}/10
-                      </span>
+                      <span className="dark:text-white">{movie.rating}/10</span>
                     </Badge>
 
                     <span className="text-accent font-semibold leading-relaxed dark:text-white">
@@ -90,7 +92,7 @@ export function CarouselMain() {
       </CarouselContent>
       <CarouselPrevious className="absolute left-2 md:left-6 xl:left-24 top-1/2 bottom-1/2" />
       <CarouselNext className="absolute right-2 md:right-6 xl:right-24 top-1/2 bottom-1/2" />
-      <CarouselSteps size={movies?.data.length ?? 3} className="" />
+      <CarouselSteps size={moviesData.length || 3} className="" />
     </Carousel>
   );
 }
