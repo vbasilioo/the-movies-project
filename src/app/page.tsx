@@ -8,14 +8,8 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { z } from 'zod';
 import { useGetMovies } from '@/hooks/movies/use-get-movies';
 import { IMovie } from '@/interfaces/api';
-
-const SkeletonCarousel = () => (
-  <div className="animate-pulse h-48 bg-gray-200 rounded-lg"></div>
-);
-
-const SkeletonCard = () => (
-  <div className="animate-pulse p-4 bg-gray-200 rounded-lg h-72"></div>
-);
+import { SkeletonCarousel } from '@/components/skeleton-carousel';
+import { SkeletonCard } from '@/components/skeleton-card';
 
 export default function Home() {
   const searchParams = useSearchParams();
