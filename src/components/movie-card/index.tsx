@@ -25,9 +25,9 @@ export function MovieCard({
 
   return (
     <Card
-      className={`bg-gray-50 dark:bg-transparent dark:border-primary 
-        ${hovering ? 'shadow-xl border-4 border-primary' : 'border border-transparent'} 
-        transition-all duration-100`}
+      className={`bg-gray-50 dark:bg-transparent border-2 border-gray-100
+        ${hovering ? 'border-primary shadow-xl' : ''} 
+        transition-all duration-300`}
     >
       <CardContent className="p-4 space-y-4">
         <Lens hovering={hovering} setHovering={setHovering}>

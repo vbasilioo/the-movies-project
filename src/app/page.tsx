@@ -4,30 +4,63 @@ import { CarouselMain } from '@/components/carousel-main';
 import Layout from './_layouts';
 import { MovieCard } from '@/components/movie-card';
 import { Pagination } from '@/components/ui/pagination';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { z } from 'zod';
 import { useGetMovies } from '@/hooks/movies/use-get-movies';
 import { IMovie } from '@/interfaces/api';
-import Loading from '@/components/ui/loading';
+
+const SkeletonCarousel = () => (
+  <div className="animate-pulse h-48 bg-gray-200 rounded-lg"></div>
+);
+
+const SkeletonCard = () => (
+  <div className="animate-pulse p-4 bg-gray-200 rounded-lg h-72"></div>
+);
 
 export default function Home() {
   const searchParams = useSearchParams();
+  const searchQuery = searchParams.get('search') || '';
   const page = z.coerce.number().parse(searchParams.get('page') ?? '1');
   const per_page = z.coerce
     .number()
     .parse(searchParams.get('per_page') ?? '12');
+  const router = useRouter();
 
-  const { data: movies } = useGetMovies({ page, per_page });
+  const { data: movies, isLoading } = useGetMovies({ page, per_page });
+
+  const filteredMovies = searchQuery
+    ? movies?.data?.filter((movie: IMovie) =>
+        movie.title.toLowerCase().includes(searchQuery.toLowerCase()),
+      )
+    : movies?.data;
+
+  const carouselMovies = searchQuery
+    ? filteredMovies
+    : movies?.data?.slice(0, 3);
+
+  const handleReset = () => {
+    router.push('/');
+  };
 
   return (
     <Layout>
-      <div className="">
-        <CarouselMain />
+      <div>
+        {isLoading || !carouselMovies ? (
+          <SkeletonCarousel />
+        ) : (
+          carouselMovies.length > 0 && <CarouselMain movies={carouselMovies} />
+        )}
 
-        <div className="px-4 pt-16 md:px-12 lg:px-28 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8">
-          {movies ? (
-            movies.data.length > 0 ? (
-              movies.data.map((movie: IMovie, index: number) => (
+        <div className="px-4 pt-16 md:px-12 lg:px-28">
+          {isLoading || !filteredMovies ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8">
+              {Array.from({ length: 12 }).map((_, index) => (
+                <SkeletonCard key={index} />
+              ))}
+            </div>
+          ) : filteredMovies.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8">
+              {filteredMovies.map((movie: IMovie, index: number) => (
                 <MovieCard
                   key={index}
                   image_url={movie.image_url}
@@ -36,25 +69,41 @@ export default function Home() {
                   actors={movie.crew}
                   rating={movie.rating}
                 />
-              ))
-            ) : (
-              <div>
-                <span>Nenhum filme encontrado.</span>
-              </div>
-            )
+              ))}
+            </div>
           ) : (
-            <Loading />
+            <section className="flex items-center justify-center h-[60vh]">
+              <div className="py-8 px-4 mx-auto max-w-screen-xl text-center">
+                <div className="max-w-screen-sm mx-auto">
+                  <p className="mb-4 text-3xl tracking-tight font-bold text-gray-900 md:text-4xl dark:text-white">
+                    Ops...
+                  </p>
+                  <p className="mb-4 text-lg font-light text-gray-500 dark:text-gray-400">
+                    Nós não conseguimos localizar nenhum filme! Tente um outro
+                    título.
+                  </p>
+                  <button
+                    onClick={handleReset}
+                    className="inline-flex text-primary focus:ring-4 focus:outline-none focus:ring-primary-300 font-bold rounded-lg text-sm px-5 py-2.5 text-center my-4"
+                  >
+                    Voltar para página inicial
+                  </button>
+                </div>
+              </div>
+            </section>
           )}
         </div>
 
-        <div className="pt-10 pb-16">
-          {movies && (
-            <Pagination
-              perPage={movies.pagination?.page ?? 12}
-              totalCount={movies.pagination?.total ?? 0}
-            />
-          )}
-        </div>
+        {!isLoading && filteredMovies && filteredMovies.length > 0 && (
+          <div className="pt-10 pb-16">
+            {movies && (
+              <Pagination
+                perPage={movies.pagination?.page ?? 12}
+                totalCount={movies.pagination?.total ?? 0}
+              />
+            )}
+          </div>
+        )}
       </div>
     </Layout>
   );
