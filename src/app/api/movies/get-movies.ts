@@ -2,10 +2,10 @@ import api from '@/app/services/api';
 import { IApiMoviesResponse, ISearchParams } from '@/interfaces/api';
 import { toast } from 'sonner';
 
-export async function getMovies({ page, per_page }: ISearchParams) {
+export async function getMovies({ page, per_page, search }: ISearchParams) {
   try {
     const response = await api.get<IApiMoviesResponse>(
-      `${process.env.API_URL!}/movies?page=${page}&limit=${per_page}`,
+      `${process.env.API_URL!}/movies?page=${page}&limit=${per_page}&search=${search}`,
     );
 
     return response.data;

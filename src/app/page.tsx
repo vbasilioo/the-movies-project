@@ -10,6 +10,7 @@ import { useGetMovies } from '@/hooks/movies/use-get-movies';
 import { IMovie } from '@/interfaces/api';
 import { SkeletonCarousel } from '@/components/skeleton-carousel';
 import { SkeletonCard } from '@/components/skeleton-card';
+import { useState } from 'react';
 
 export default function Home() {
   const searchParams = useSearchParams();
@@ -18,9 +19,18 @@ export default function Home() {
   const per_page = z.coerce
     .number()
     .parse(searchParams.get('per_page') ?? '12');
+
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState<string>(
+    searchParams.get('search') || '',
+  );
+
   const router = useRouter();
 
-  const { data: movies, isLoading } = useGetMovies({ page, per_page });
+  const { data: movies, isLoading } = useGetMovies({
+    page,
+    per_page,
+    search: debouncedSearchTerm,
+  });
 
   const filteredMovies = searchQuery
     ? movies?.data?.filter((movie: IMovie) =>
